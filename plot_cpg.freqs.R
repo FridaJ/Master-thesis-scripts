@@ -1,18 +1,21 @@
 # This script will make line charts of the cpg.freq results for the diagnostic subgroups. 
+# Set the variables subtype and aml.class to make a plot
 
 setwd("Documents/R_work")
+load(file = "AML_cpg.freqs.new.Rdata")
 
-# Define one subtype vector
-MLL <- cpg.freq.MLL$freq
+# Define one subtype frequency vector and a string for class
+subtype <- cpg.freq.t821.new$freq
+aml.class <- "t821"
 
-# Graph MLL using blue points overlayed by a line 
-plot(MLL, type="o", col="blue", ylim = c(0,25), axes=FALSE, ann=FALSE)
+# Graph subtype using blue points overlayed by a line 
+plot(subtype, type="o", col="blue", ylim = c(0,25), axes=FALSE, ann=FALSE)
 
 # Create a title with a red, bold/italic font
-title(main="CpG sites in 5x5 CV, MLL", col.main="red", font.main=4)
+title(main=paste0("CpG sites in 5x5 CV, ", aml.class), col.main="red", font.main=4)
 
 # Make x axis using CpG site labels
-#axis(1, at=1:nrow(cpg.freq.MLL), lab=cpg.freq.MLL$index)
+#axis(1, at=1:length(subtype), lab=cpg.freq.MLL$index)
 axis(1, las=1)
 
 # Make y axis with horizontal labels.

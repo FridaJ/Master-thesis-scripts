@@ -14,21 +14,21 @@ load("AML_class_vectors.Rdata")
 # Three vectors for each subtype, number of CpG sites chosen are based on the look of the curves in the cpg.freq plots
 # GRSet_beta_classifierX is the data that should be used for the final training with pamr.train
 
-GRSet_beta_classifier1.t821 <- GRSet_beta_known[cpg.freq.t821$index[1:5], ]
-GRSet_beta_classifier2.t821 <- GRSet_beta_known[cpg.freq.t821$index[1:10], ]
-GRSet_beta_classifier3.t821 <- GRSet_beta_known[cpg.freq.t821$index[1:15], ]
+GRSet_beta_classifier1.t821 <- GRSet_beta_known[cpg.freq.t821.new$index[1:5], ]
+GRSet_beta_classifier2.t821 <- GRSet_beta_known[cpg.freq.t821.new$index[1:12], ]
+GRSet_beta_classifier3.t821 <- GRSet_beta_known[cpg.freq.t821.new$index[1:18], ]
 
-GRSet_beta_classifier1.inv16 <- GRSet_beta_known[cpg.freq.inv16$index[1:10], ]
-GRSet_beta_classifier2.inv16 <- GRSet_beta_known[cpg.freq.inv16$index[1:61], ]
-GRSet_beta_classifier3.inv16 <- GRSet_beta_known[cpg.freq.inv16$index[1:113], ]
+GRSet_beta_classifier1.inv16 <- GRSet_beta_known[cpg.freq.inv16.new$index[1:6], ] # Tested 6, 7, 11 sites; 6 was best!
+GRSet_beta_classifier2.inv16 <- GRSet_beta_known[cpg.freq.inv16.new$index[1:17], ]
+GRSet_beta_classifier3.inv16 <- GRSet_beta_known[cpg.freq.inv16.new$index[1:79], ]
 
-GRSet_beta_classifier1.mono7 <- GRSet_beta_known[cpg.freq.mono7$index[1:6], ]
-GRSet_beta_classifier2.mono7 <- GRSet_beta_known[cpg.freq.mono7$index[1:13], ]
-GRSet_beta_classifier3.mono7 <- GRSet_beta_known[cpg.freq.mono7$index[1:22], ]
+GRSet_beta_classifier1.mono7 <- GRSet_beta_known[cpg.freq.mono7.new$index[1:5], ]
+GRSet_beta_classifier2.mono7 <- GRSet_beta_known[cpg.freq.mono7.new$index[1:13], ]
+GRSet_beta_classifier3.mono7 <- GRSet_beta_known[cpg.freq.mono7.new$index[1:19], ]
 
-GRSet_beta_classifier1.MLL <- GRSet_beta_known[cpg.freq.MLL$index[1:13], ]
-GRSet_beta_classifier2.MLL <- GRSet_beta_known[cpg.freq.MLL$index[1:49], ]
-GRSet_beta_classifier3.MLL <- GRSet_beta_known[cpg.freq.MLL$index[1:104], ]
+GRSet_beta_classifier1.MLL <- GRSet_beta_known[cpg.freq.MLL.new$index[1:13], ]
+GRSet_beta_classifier2.MLL <- GRSet_beta_known[cpg.freq.MLL.new$index[1:27], ]
+GRSet_beta_classifier3.MLL <- GRSet_beta_known[cpg.freq.MLL.new$index[1:89], ]
 
 # Make lists that will be input for pamr.train, making these final classifiers
 
@@ -72,11 +72,11 @@ train.and.evaluate.final <- function(error.rate.final, classifier.list) {
 ##### Loop for training the final classifiers and getting the error rates #####
 
 # Since the pamr.train function used will be randomized it will not give the same result each time. 
-# Therefore, train the classifiers 50 times and investigate the distribution of error rates for the triplets of classifiers
+# Therefore, train the classifiers 50 or 200 times and investigate the distribution of error rates for the triplets of classifiers
 
 acc.errors <- c(0,0,0,0,0,0,0,0,0,0,0,0) # Initiate vector for storing the accumulative errors found when training the final classifiers
 
-for (i in c(1:50)) {
+for (i in c(1:200)) {
   error.rate.final <- vector() # Initiate vector for storing error rates
   for (j in c(1:length(final.classifiers.list))) {
     classifier.and.error <- train.and.evaluate.final(error.rate.final, final.classifiers.list[[j]])
@@ -90,77 +90,63 @@ for (i in c(1:50)) {
 
 # Result:
 #> acc.errors
-#[1]   0   0   0  49  48  36  31   0   9 100 151 150
+#[1]   0   0   0  14  31  39  33   0   0 124 152 158      Using 6 sites for small inv16, 50 runs
+
+#> acc.errors
+#[1]   0   0   0  55 124 141 118   0   0 485 601 623      Using 6 sites for small inv16, 200 runs
+#> acc.errors/4
+#[1]   0.00   0.00   0.00  13.75  31.00  35.25  29.50   0.00   0.00 121.25 150.25 155.75
+
+#> acc.errors
+#[1]   0   0   0  32  29  42  35   0   0 123 151 154      Using 11 sites for small inv16, 50 runs
+
+#> acc.errors
+#[1]   0   0   0 162 127 152 106   0   0 499 607 620      Using 11 sites for small inv16, 200 runs
+#> acc.errors/4
+#[1]   0.00   0.00   0.00  40.50  31.75  38.00  26.50   0.00   0.00 124.75 151.75 155.00
+
+#> acc.errors
+#[1]   0   0   0 142 125 131 110   0   0 478 610 624      Using 7 sites for small inv16, 200 runs
+#> acc.errors/4
+#[1]   0.00   0.00   0.00  35.50  31.25  32.75  27.50   0.00   0.00 119.50 152.50 156.00
+
+# Final errors, 200 runs, 6 sites in small inv16:
+
+#> acc.errors
+#[1]   0   0   0  69 122 140 108   0   0 487 602 621
+#> acc.errors/4
+#[1]   0.00   0.00   0.00  17.25  30.50  35.00  27.00   0.00   0.00 121.75 150.50 155.25
 
 save(acc.errors, file = "accumulative_errors.Rdata")
 
-# Make figure for this data, see script plot.acc.errors.R
+# Make figure for this data, did in MS Excel!
 
 # Choose the final classifiers based on this:
 
-# t821  - classifier 3 (classifier.data.3)
-# inv16 - classifier 3 (classifier.data.6)
-# mono7 - classifier 2 (classifier.data.8)
-# MLL   - classifier 1 (classifier.data.10)
+# t821  - classifier 3 (classifier.data.3)    Based on 18 cpg sites
+# inv16 - classifier 1 (classifier.data.4)    Based on 6 cpg sites
+# mono7 - classifier 3 (classifier.data.9)    Based on 19 cpg sites
+# MLL   - classifier 1 (classifier.data.10)   Based on 13 cpg sites
 
 # Run the inner loop again to generate the classifier.data variables and store them in a list
 # Check that the error rates for the run corresponds to the acc.errors above, that they show the same pattern
 
+j <- 1
+
 for (j in c(1:length(final.classifiers.list))) {
   classifier.and.error <- train.and.evaluate.final(error.rate.final, final.classifiers.list[[j]])
   classifier.data <- classifier.and.error$trained.data
-  assign(paste0("classifier.data", ".", i), classifier.data) # classifier.data.X will be the classifier data for element X in final.classifiers.list
+  assign(paste0("classifier.data", ".", j), classifier.data) # classifier.data.X will be the classifier data for element X in final.classifiers.list
   error.rate.final[j] <- classifier.and.error$error*77 # Mult. with no of samples to get the actual number of errors
 }
 
+#> error.rate.final
+#[1] 0 0 0 0 1 1 1 0 0 2 3 4
+
 classifier.data.t821 <- classifier.data.3
-classifier.data.inv16 <- classifier.data.6
-classifier.data.mono7 <- classifier.data.8
+classifier.data.inv16 <- classifier.data.4
+classifier.data.mono7 <- classifier.data.9
 classifier.data.MLL <- classifier.data.10
 
 save(classifier.data.t821, classifier.data.inv16, classifier.data.mono7, classifier.data.MLL, file = "final_classifiers.Rdata")
 
-
-
-##### Using the final classifiers on unknown data #####
-
-# Subset the unknown data to the relevant CpG sites, then use pamr.predict
-# Load final_classifiers.Rdata if needed
-
-GRSet_beta_unknown.t821cpgs <- GRSet_beta_unknown[cpg.freq.t821$index[1:15], ] # Use all cpg sites found for this classifier
-predicted <- pamr.predict(classifier.data.t821, GRSet_beta_unknown.t821cpgs, threshold = 0) #threshold = 0 to use all cpg sites
-summary(predicted) 
-
-# not t(8;21)     t(8;21) 
-# 58           0 
-
-t821.predicted <- which(predicted %in% "t(8;21)") # gives a vector of indexes (unknown data) that are predicted t821
-
-GRSet_beta_unknown.inv16cpgs <- GRSet_beta_unknown[cpg.freq.inv16$index, ] # Use all cpg sites found for this classifier
-predicted <- pamr.predict(classifier.data.inv16, GRSet_beta_unknown.inv16cpgs, threshold = 0) #threshold = 0 to use all cpg sites
-summary(predicted) 
-
-# inv(16) not inv(16) 
-# 3          55 
-
-inv16.predicted <- which(predicted %in% "inv(16)") # gives a vector of indexes (unknown data) that are predicted inv16
-
-GRSet_beta_unknown.mono7cpgs <- GRSet_beta_unknown[cpg.freq.mono7$index[1:13], ] # Use 13 most common cpg sites
-predicted <- pamr.predict(classifier.data.mono7, GRSet_beta_unknown.mono7cpgs, threshold = 0) #threshold = 0 to use all cpg sites
-summary(predicted) 
-
-# mono 7 not mono 7 
-# 4         54 
-
-mono7.predicted <- which(predicted %in% "mono 7") # gives a vector of indexes (unknown data) that are predicted mono7
-
-GRSet_beta_unknown.MLLcpgs <- GRSet_beta_unknown[cpg.freq.MLL$index[1:13], ] # Use 13 most common cpg sites
-predicted <- pamr.predict(classifier.data.MLL, GRSet_beta_unknown.MLLcpgs, threshold = 0) #threshold = 0 to use all cpg sites
-summary(predicted) 
-
-# MLL not MLL 
-# 7      51 
-
-MLL.predicted <- which(predicted %in% "MLL") # gives a vector of indexes (unknown data) that are predicted MLL
-
-save(t821.predicted, inv16.predicted, mono7.predicted, MLL.predicted, file = "subtypes_predicted.Rdata")

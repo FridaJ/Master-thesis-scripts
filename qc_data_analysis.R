@@ -74,7 +74,7 @@ sex.matched <- sex_dataset == sex_predicted
 sex.matched[is.na(sex.matched)] <- "Unknown" #Need to change NA to "unknown" or NA samples will not be included
 idx <- which(sex.matched %in% c("Unknown", "FALSE")) #gives indexes for the non-matching samples
 
-#This shows the pheno data for these samples. Only 02/235 is of concern, others are pos and neg controls so it was expected.
+#This shows the pheno data for these samples. Only 02/235 (index 36) is of concern, others are pos and neg controls so it was expected.
 
 
 ############### Principal Compoment Analysis, PCA ###############
